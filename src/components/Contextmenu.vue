@@ -46,15 +46,12 @@ export default {
     document.body.appendChild(this.mainMenuInstance.$el);
     this.addListener();
   },
-  destroyed() {
-    this.removeListener();
-    if (this.mainMenuInstance) {
-      this.mainMenuInstance.close();
-    }
-  },
   methods: {
     mousewheelListener() {
-      this.$destroy();
+      this.close()
+      this.$nextTick(() => {
+        this.$destroy();
+      })
     },
     mouseDownListener(e) {
       let el = e.target;
@@ -63,7 +60,10 @@ export default {
         el = el.parentElement;
       }
       if (!menus.find(m => m === el)) {
-        this.$destroy();
+        this.close()
+        this.$nextTick(() => {
+          this.$destroy();
+        });
       }
     },
     mouseClickListener(e) {
@@ -84,11 +84,17 @@ export default {
         if (e.button !== 0 || unclickableMenuItems.find(m => m === el)) {
           return;
         }
-        this.$destroy();
+        this.close()
+        this.$nextTick(() => {
+          this.$destroy();
+        });
         return;
       }
       if (!menus.find(m => m === el)) {
-        this.$destroy();
+        this.close()
+        this.$nextTick(() => {
+          this.$destroy();
+        });
       }
     },
     addListener() {
@@ -105,6 +111,12 @@ export default {
         document.removeEventListener("mousedown", this.mouseDownListener);
         document.removeEventListener("mousewheel", this.mousewheelListener);
         this.mouseListening = false;
+      }
+    },
+    close() {
+      this.removeListener();
+      if (this.mainMenuInstance) {
+        this.mainMenuInstance.close();
       }
     }
   }
